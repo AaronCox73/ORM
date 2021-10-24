@@ -12,13 +12,9 @@ router.get('/', (req, res) => {
     include: [
       {
         model: Product,
-        attributes: ['product_name', 'price', 'stock', 'category_id']
+        through: ProductTag,
       },
-      {
-        model: ProductTag,
-        attributes: ['product_id', 'tag_id']
-      }
-    ]
+    ],
   })
     .then(dbTagData => res.json(dbTagData))
     .catch(err => {
@@ -38,13 +34,9 @@ router.get('/:id', (req, res) => {
     include: [
       {
         model: Product,
-        attributes: ['product_name', 'price', 'stock', 'category_id']
+        through: ProductTag,
       },
-      {
-        model: ProductTag,
-        attributes: ['product_id', 'tag_id']
-      }
-    ]
+    ],
   })
     .then(dbTagData => {
       if (!dbTagData) {
@@ -61,16 +53,15 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   // create a new tag
-  if (req.session) {
-    Tag.create({
-      tag_name: req.body.tag_name
-    })
-      .then(dbTagData => res.json(dbTagData))
-      .catch(err => {
-        console.log(err);
-        res.status(400).json(err)
-      });
-  }
+
+  Tag.create({
+    tag_name: req.body.tag_name
+  })
+    .then(dbTagData => res.json(dbTagData))
+    .catch(err => {
+      console.log(err);
+      res.status(400).json(err)
+    });
 });
 
 router.put('/:id', (req, res) => {
@@ -101,7 +92,7 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   // delete on tag by its `id` value
 
-  Tag.delete({
+  Tag.destroy({
     where: {
       id: req.params.id
     }
